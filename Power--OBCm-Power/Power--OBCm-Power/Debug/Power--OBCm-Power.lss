@@ -1,0 +1,217 @@
+
+Power--OBCm-Power.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000000ea  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000000  00800060  00800060  0000013e  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .comment      00000030  00000000  00000000  0000013e  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000170  2**2
+                  CONTENTS, READONLY
+  4 .debug_aranges 000000c0  00000000  00000000  000001ac  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   00000944  00000000  00000000  0000026c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 00000701  00000000  00000000  00000bb0  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   00000601  00000000  00000000  000012b1  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  0000012c  00000000  00000000  000018b4  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    00000473  00000000  00000000  000019e0  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    000000cf  00000000  00000000  00001e53  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 00000090  00000000  00000000  00001f22  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 2a 00 	jmp	0x54	; 0x54 <__ctors_end>
+   4:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+   8:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+   c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  10:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  14:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  18:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  1c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  20:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  24:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  28:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  2c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  30:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  34:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  38:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  3c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  40:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  44:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  48:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  4c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  50:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+
+00000054 <__ctors_end>:
+  54:	11 24       	eor	r1, r1
+  56:	1f be       	out	0x3f, r1	; 63
+  58:	cf e5       	ldi	r28, 0x5F	; 95
+  5a:	d8 e0       	ldi	r29, 0x08	; 8
+  5c:	de bf       	out	0x3e, r29	; 62
+  5e:	cd bf       	out	0x3d, r28	; 61
+  60:	0e 94 4f 00 	call	0x9e	; 0x9e <main>
+  64:	0c 94 73 00 	jmp	0xe6	; 0xe6 <_exit>
+
+00000068 <__bad_interrupt>:
+  68:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+0000006c <TWI_init_slave>:
+{
+	char recv_data;
+	TWCR=(1<<TWINT)|(1<<TWEN);    // Clear TWI interrupt flag,Enable TWI
+	while (!(TWCR & (1<<TWINT))); // Wait till complete TWDR byte transmitted
+	while((TWSR & 0xF8) != 0x58); // Check for the acknoledgement
+	recv_data=TWDR;//PORTA=recv_data;
+  6c:	80 e2       	ldi	r24, 0x20	; 32
+  6e:	82 b9       	out	0x02, r24	; 2
+  70:	84 e4       	ldi	r24, 0x44	; 68
+  72:	86 bf       	out	0x36, r24	; 54
+  74:	08 95       	ret
+
+00000076 <TWI_read_data_slave>:
+
+//slave receiver code
+uint8_t TWI_read_data_slave(void)
+{
+	begin:
+		TWCR = (1<<TWINT)|(1<<TWEA)|(1<<TWEN);
+  76:	24 ec       	ldi	r18, 0xC4	; 196
+  78:	92 2f       	mov	r25, r18
+  7a:	96 bf       	out	0x36, r25	; 54
+		while (!(TWCR &(1<<TWINT)));
+  7c:	06 b6       	in	r0, 0x36	; 54
+  7e:	07 fe       	sbrs	r0, 7
+  80:	fd cf       	rjmp	.-6      	; 0x7c <TWI_read_data_slave+0x6>
+		switch(TWSR & 0xF8)	//check for whether it is being addressed
+  82:	81 b1       	in	r24, 0x01	; 1
+  84:	88 7f       	andi	r24, 0xF8	; 248
+  86:	80 36       	cpi	r24, 0x60	; 96
+  88:	c1 f7       	brne	.-16     	; 0x7a <TWI_read_data_slave+0x4>
+
+			default:
+			goto begin;
+		}
+		
+		TWCR = (1<<TWINT)|(1<<TWEA)|(1<<TWEN); 
+  8a:	26 bf       	out	0x36, r18	; 54
+		while (!(TWCR &(1<<TWINT)));
+  8c:	06 b6       	in	r0, 0x36	; 54
+  8e:	07 fe       	sbrs	r0, 7
+  90:	fd cf       	rjmp	.-6      	; 0x8c <TWI_read_data_slave+0x16>
+
+		switch(TWSR & 0xF8)				//checking for whether ack for data has been sent 
+  92:	81 b1       	in	r24, 0x01	; 1
+  94:	88 7f       	andi	r24, 0xF8	; 248
+  96:	80 38       	cpi	r24, 0x80	; 128
+  98:	81 f7       	brne	.-32     	; 0x7a <TWI_read_data_slave+0x4>
+		
+		default:
+		goto begin;
+		}
+		uint8_t send;			//this should be after sending ack since uske pehle tak twdr me slave address hota h. after sending ack usme data aata hai. 
+		send=TWDR;
+  9a:	83 b1       	in	r24, 0x03	; 3
+		return send;
+}
+  9c:	08 95       	ret
+
+0000009e <main>:
+
+
+int main(void)
+{
+    // Initializations
+    init_UART();
+  9e:	0e 94 61 00 	call	0xc2	; 0xc2 <init_UART>
+	TWI_init_slave();
+  a2:	0e 94 36 00 	call	0x6c	; 0x6c <TWI_init_slave>
+    
+    //sei();
+		
+    while (1) 
+    {
+		uint8_t data= TWI_read_data_slave();
+  a6:	0e 94 3b 00 	call	0x76	; 0x76 <TWI_read_data_slave>
+		transmit_UART(data);
+  aa:	0e 94 6f 00 	call	0xde	; 0xde <transmit_UART>
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+  ae:	2f ef       	ldi	r18, 0xFF	; 255
+  b0:	80 e7       	ldi	r24, 0x70	; 112
+  b2:	92 e0       	ldi	r25, 0x02	; 2
+  b4:	21 50       	subi	r18, 0x01	; 1
+  b6:	80 40       	sbci	r24, 0x00	; 0
+  b8:	90 40       	sbci	r25, 0x00	; 0
+  ba:	e1 f7       	brne	.-8      	; 0xb4 <main+0x16>
+  bc:	00 c0       	rjmp	.+0      	; 0xbe <main+0x20>
+  be:	00 00       	nop
+  c0:	f2 cf       	rjmp	.-28     	; 0xa6 <main+0x8>
+
+000000c2 <init_UART>:
+
+
+void init_UART(void )
+{
+
+  UCSRA = 0;
+  c2:	1b b8       	out	0x0b, r1	; 11
+  UCSRB = 0;
+  c4:	1a b8       	out	0x0a, r1	; 10
+  UCSRC = 0;
+  c6:	10 bc       	out	0x20, r1	; 32
+  
+  ///Double Baud Rate
+  UCSRA |= _BV(U2X);
+  c8:	59 9a       	sbi	0x0b, 1	; 11
+  ///Enable Reception
+  UCSRB |= _BV(RXEN) | _BV(TXEN);
+  ca:	8a b1       	in	r24, 0x0a	; 10
+  cc:	88 61       	ori	r24, 0x18	; 24
+  ce:	8a b9       	out	0x0a, r24	; 10
+  ///8-bit Data Byte, 2 Stop bits
+  UCSRC |= _BV(USBS) | _BV(UCSZ1) | _BV(UCSZ0);
+  d0:	80 b5       	in	r24, 0x20	; 32
+  d2:	8e 60       	ori	r24, 0x0E	; 14
+  d4:	80 bd       	out	0x20, r24	; 32
+  ///Set Baud Rate to 9600
+  UBRRL = 103;
+  d6:	87 e6       	ldi	r24, 0x67	; 103
+  d8:	89 b9       	out	0x09, r24	; 9
+  UBRRH = 0;
+  da:	10 bc       	out	0x20, r1	; 32
+  dc:	08 95       	ret
+
+000000de <transmit_UART>:
+}
+
+void transmit_UART(uint8_t data)
+{
+  //* Wait for empty transmit buffer 
+  while ( !(UCSRA & (_BV(UDRE))) );
+  de:	5d 9b       	sbis	0x0b, 5	; 11
+  e0:	fe cf       	rjmp	.-4      	; 0xde <transmit_UART>
+  //* Start transmission
+  UDR = data;
+  e2:	8c b9       	out	0x0c, r24	; 12
+  e4:	08 95       	ret
+
+000000e6 <_exit>:
+  e6:	f8 94       	cli
+
+000000e8 <__stop_program>:
+  e8:	ff cf       	rjmp	.-2      	; 0xe8 <__stop_program>
