@@ -1,8 +1,8 @@
 /*
  * i2c.c
  *
- * Created: 15-07-2017 21:31:43
- *  Author: Chitrangna Bhatt
+ * Created: 12-10-2017 21:31:43
+ *  Author: ZEUS
  */ 
 #include "i2c.h"
 #include "common.h"
