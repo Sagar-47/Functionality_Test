@@ -29,17 +29,13 @@ ISR(TWI_vect){
 		break;
 		
 		case 0xA8://Slave is being addressed
-		//transmit_UART('a');
+		case 0xC0://Data being sent
+		TWDR=data_1;
 		TWCR|=(1<<TWINT)|(1<<TWEN)|(1<<TWEA);	
 		/*unsigned char data_1 = 'd'; 
 		TWI_write_data('d')//*/
 		break;
-		
-		case 0xC0://Data being sent 
-		//transmit_UART('b');
-		TWDR='d'; 
-		TWCR=(1<<TWINT)|(1<<TWEN);	//sending ack
-		break;
+
 		/*case 0xA0:
 		TWCR|= (1<<TWINT)|(1<<TWEA)|(1<<TWEN)|(1<<TWIE);    //sei();
 		break;*/
@@ -65,6 +61,6 @@ int main(void)
 	(1<<TWIE)|(1<<TWINT)|                  // Enable TWI Interupt and clear the flag.
 	(1<<TWEA);
 	  //TWCR|= (1<<TWINT)|(1<<TWEA)|(1<<TWEN)|(1<<TWIE);
-	while (1){}
+	while (1){}//hold the program for both SLA receiving and Data receiving
 }
 
